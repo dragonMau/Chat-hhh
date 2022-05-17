@@ -1,0 +1,25 @@
+<!-- index.html -->
+<!DOCTYPE html>
+<html id="main" lang="en">
+    <head>
+    </head>
+    <body id="body">
+        <p id="user">a</p>
+        <p><div id="messages">
+        </div></p>
+        <p><input placeholder="Message" id="message" onkeydown="send_message_key()"><button onclick="send_message()">Send</button></p>
+
+        <script id="new script">
+            document.getElementById("user").innerHTML = user["name"];
+            
+            function send_message(){
+                socket.emit("message", document.getElementById("message").value);
+                document.getElementById("message").value = "";
+            }
+            function send_message_key(){
+                if (event.keyCode == 13)
+                    send_message();
+            }
+        </script>
+    </body>
+</html>
