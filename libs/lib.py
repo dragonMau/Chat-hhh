@@ -33,9 +33,9 @@ class User:
         self.sid = sid
         if name.data == "":
             self.name: HexStr = HexStr.from_str(sid)
-        else:
+        else: 
             self.name: HexStr = name
-        print(f"added user {self.name.to_str() = }, {self.sid = }")
+
 
 class Message:
     id: int
@@ -52,7 +52,7 @@ class Message:
         return f"{self.id} {self.owner.name.to_hex()} {self.content.to_hex()}"
     
     def pack(self) -> str:
-        return f"{self.owner.name.to_str()}: {self.content.to_str()}"
+        return [self.id, f"{self.owner.name.to_str()}: {self.content.to_str()}"]
     
     def __init__(self, name: User, data: str) -> None:
         self.id = time_ns()

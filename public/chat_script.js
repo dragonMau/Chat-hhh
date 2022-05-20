@@ -19,6 +19,15 @@ function send_message_key(){
     if (event.keyCode == 13)
         send_message();
 }
+socket.on("message", (data)=>{
+    n_m = document.createElement("div");
+    n_m.classList.add("scroll-page");
+    n_m.id = data[0];
+    n_m.innerHTML = data[1];
+    messages.appendChild(n_m);
+    sort();
+    toBottom();
+})
 
 if (user["name"].length > 5)
     nickname = user["name"].substring(0, 5) + "...";

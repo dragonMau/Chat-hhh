@@ -1,7 +1,10 @@
 from os import path, system
+from socket import socket
+from time import time_ns
 from tkinter import END, Button, Entry, Frame, Text, Tk
 
 from lib import Storage
+import asyncio
 
 
 class Gui():
@@ -11,6 +14,7 @@ class Gui():
     field: Entry
     button_send: Button
     storage: Storage
+    sio: None
 
     def write(self, chars):
         self.text.configure(state="normal")
@@ -19,14 +23,15 @@ class Gui():
         self.text.see(END)
 
     def parseCommand(self, *e):
-        data = self.field.get()
+        data, *args = self.field.get().split()
         self.field.delete(0, END)
         if data == "help":
             self.write("""
 help list:
     list - list all active members
     stop - stop the server
-    join - start new client""")
+    join - start new client
+    send - send message""")
         elif data == "stop":
             exit()
         elif data == "list":

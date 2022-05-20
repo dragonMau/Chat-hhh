@@ -1,4 +1,7 @@
+from asyncio import sleep
+from email.header import Header
 from os import path
+from time import time_ns
 
 import socketio
 from aiohttp import web
@@ -63,11 +66,12 @@ class Server:
             with open("./public/chat.html", "r") as f:
                 await self.sio.emit("login answer", {"code":"ok", "new":f.read()}, to=sid)
             self.gui.write("\n"+ usr_name.to_str() +" joined")
+            await self.sio.emit("message", {0: time_ns(), 1: usr_name.to_str() + " joined"})
             
         @self.sio.on('message')
         async def print_message(sid, message, *_):
             message = Message(next((x for x in self.storage.users if x.sid == sid), None), message)
-            self.gui.write("\n" + message.pack())
+            self.gui.write("\n" + message.pack()[1])
             with open(f"./local/messages/list", "a") as f:
                 f.writelines(message.dump()+"\n")
             

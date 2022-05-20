@@ -11,6 +11,7 @@ from window import Gui
 storage = Storage()
 gui = Gui(storage)
 server = Server(gui, storage)
+gui.sio = server.sio
 
 socket_loop = Thread(target=web.run_app, args=(server.app,))
 socket_loop.daemon = True
