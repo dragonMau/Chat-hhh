@@ -1,0 +1,22 @@
+<!-- index.html -->
+<!DOCTYPE html>
+<html lang="en" id="main">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>Document</title>
+  </head>
+  <body>
+    <div>
+      <label>Login:</label>
+      <input type="login" id="usr" placeholder="Username" onkeydown="usr_key_down()"><br><br>
+      <label>Password:</label>
+      <input type="password" id="pwd" placeholder="Password" onkeydown="pwd_key_down()"><br><br>
+      <div><button onclick="send()">Send</button><a id="result"></a></div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/3.0.4/socket.io.js"></script>
+    <script src="/static/index_script.js"></script>
+  </body>
+</html>

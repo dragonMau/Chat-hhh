@@ -1,0 +1,29 @@
+<!-- index.html -->
+<!DOCTYPE html>
+<html id="main" lang="en">
+    <head>
+        <style>
+            .scroll-container {
+                width: 300px;
+                height: 200px;
+                overflow-y: scroll;
+                scroll-behavior: smooth;
+                margin-left: 48px;
+              }
+            .scroll-page {
+                display: flex;
+                align-items: left;
+                justify-content: left;
+            }
+            
+        </style>
+    </head>
+    <body id="body">
+        <div id="messages" class="scroll-container">
+            <div id="0" class="scroll-page">Welcome to this chat!</div>
+        </div>
+        <div>
+            <div style="display:inline-block; width:48px; height:19px; background-color:white; color:black;"><nobr id="user">Curom...</nobr></div><input placeholder="Message" id="message" onkeydown="send_message_key()" style="width: 250px;"><button onclick="send_message()" style="width: 48px;">Send</button>
+        </div>
+    </body>
+</html>
