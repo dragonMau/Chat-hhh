@@ -3,7 +3,7 @@ from os import path
 import socketio
 from aiohttp import web
 
-from lib import Storage, User
+from lib import Storage, User, Message, HexStr
 from window import Gui
 
 
@@ -13,25 +13,28 @@ class Server:
     gui: Gui
     storage: Storage
     
-    async def index(self, request):
+    async def kick(self, sid: str) -> None:
+        await self.sio.emit("stop", to=sid)
+        await self.sio.disconnect(sid)
+    
+    async def index(self, request) -> web.Response:
         with open('./public/index.html') as f:
             return web.Response(text=f.read(), content_type='text/html')
     
-    def init_handler(self):
+    def init_handler(self) -> None:
         @self.sio.on('connect')
         async def connect(sid, *_):
-            self.storage.users[sid] = User(sid)
+            self.storage.users.append(User(sid=sid))
         
         @self.sio.on('register')
         async def register(sid, data, *_):
             result = "error"
-            usr = data["usr"]
-            h_usr = usr.encode("utf-8").hex()
-            pwd = data["pwd"]
-            if not path.exists(f"./local/users/{h_usr}"):
-                with open(f"./local/users/{h_usr}", "w") as f:
+            usr: HexStr = HexStr.from_str(data["usr"])
+            pwd: str = data["pwd"]
+            if not path.exists(f"./local/users/{usr.to_hex()}"):
+                with open(f"./local/users/{usr.to_hex()}", "w") as f:
                     f.write(f"{pwd}\n")
-                    f.write(f"{usr}\n")
+                    f.write(f"{usr.to_str()}\n")
                 result = "ok"
             else:
                 result = "overlap"
@@ -39,44 +42,45 @@ class Server:
             
         @self.sio.on('login')
         async def login(sid, data, *_):
-            if sid in self.storage.users.keys():
-                if self.storage.users[sid].name != sid:
-                    return
-            result = "error"
-            usr = data["usr"]
-            h_usr = usr.encode("utf-8").hex()
+            usr_name: HexStr = HexStr.from_str(data["usr"])
             pwd = data["pwd"]
-            data = ""
-            if usr in [u.name for u in self.storage.users.values()]:
-                td = [k for k, v in self.storage.users.items() if v.name == usr][0]
-                await self.sio.emit("stop", to=td)
-                await self.sio.disconnect(td)
-            if path.exists(f"./local/users/{h_usr}"):
-                with open(f"./local/users/{h_usr}", "r") as f:
-                    user_data = f.read().split("\n")
-                    if pwd == user_data[0]:
-                        self.storage.users[sid] = User(sid, usr)
-                        self.gui.write("\n"+ self.storage.users[sid].name +" joined")
-                        result = "ok"
-                        with open("./public/chat.html", "r") as f:
-                            data = f.read()
-                    else:
-                        result = "wrong pwd"
-            else:
-                result = "wrong usr"
-            await self.sio.emit("login answer", {"code":result, "new":data}, to=sid)
+            usr_path = f"./local/users/{usr_name.to_hex()}"
+            if not path.exists(usr_path):
+                await self.sio.emit("login answer", {"code":"wrong usr", "new":""}, to=sid)
+                return
+            with open(usr_path, "r") as f:
+                user_data = f.read().split("\n")
+                if pwd != user_data[0]:
+                    await self.sio.emit("login answer", {"code":"wrong pwd", "new":""}, to=sid)
+                    return
+            for i, x in enumerate(self.storage.users):
+                if x.name.data == usr_name.data:
+                    await self.kick(x.sid)
+                    del self.storage.users[i]
+                if x.sid == sid:
+                    del self.storage.users[i]
+            self.storage.users.append(User(sid, usr_name))
+            with open("./public/chat.html", "r") as f:
+                await self.sio.emit("login answer", {"code":"ok", "new":f.read()}, to=sid)
+            self.gui.write("\n"+ usr_name.to_str() +" joined")
             
         @self.sio.on('message')
         async def print_message(sid, message, *_):
-            self.gui.write("\n" + self.storage.users[sid].name + ": " + str(message))
+            message = Message(next((x for x in self.storage.users if x.sid == sid), None), message)
+            self.gui.write("\n" + message.pack())
+            with open(f"./local/messages/list", "a") as f:
+                f.writelines(message.dump()+"\n")
+            
             
         @self.sio.on('disconnect')
         async def disconnect(sid, *_):
-            self.gui.write("\n"+ self.storage.users[sid].name +" left")
-            del self.storage.users[sid]
+            user_index = User.get(sid)
+            self.gui.write("\n"+ self.storage.users[user_index].name.to_str() +" left")
+            del self.storage.users[user_index]
             
     def __init__(self, gui, storage) -> None:
         self.storage = storage
+        User.user_list = lambda: self.storage.users
         self.gui = gui
         self.sio = socketio.AsyncServer()
         self.app = web.Application()

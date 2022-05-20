@@ -31,8 +31,8 @@ help list:
             exit()
         elif data == "list":
             self.write(f"\n{len(self.storage.users)} members active:")
-            for sid, member in self.storage.users.items():
-                self.write(f"\n   {member.name} - {sid}")
+            for usr in self.storage.users:
+                self.write(f"\n   {usr.name.to_str()} - {usr.sid}")
         elif data == "join":
             system("explorer \"http://localhost:8080\"")
             
