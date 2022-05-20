@@ -28,8 +28,8 @@ class Server:
             usr = data["usr"]
             h_usr = usr.encode("utf-8").hex()
             pwd = data["pwd"]
-            if not path.exists(f"./users/{h_usr}"):
-                with open(f"./users/{h_usr}", "w") as f:
+            if not path.exists(f"./local/users/{h_usr}"):
+                with open(f"./local/users/{h_usr}", "w") as f:
                     f.write(f"{pwd}\n")
                     f.write(f"{usr}\n")
                 result = "ok"
@@ -51,8 +51,8 @@ class Server:
                 td = [k for k, v in self.storage.users.items() if v.name == usr][0]
                 await self.sio.emit("stop", to=td)
                 await self.sio.disconnect(td)
-            if path.exists(f"./users/{h_usr}"):
-                with open(f"./users/{h_usr}", "r") as f:
+            if path.exists(f"./local/users/{h_usr}"):
+                with open(f"./local/users/{h_usr}", "r") as f:
                     user_data = f.read().split("\n")
                     if pwd == user_data[0]:
                         self.storage.users[sid] = User(sid, usr)
