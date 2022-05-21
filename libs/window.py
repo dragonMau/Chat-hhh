@@ -23,7 +23,7 @@ class Gui():
         self.text.see(END)
 
     def parseCommand(self, *e):
-        data, *args = self.field.get().split()
+        data, *args = self.field.get().split()+[None]
         self.field.delete(0, END)
         if data == "help":
             self.write("""
@@ -36,8 +36,8 @@ help list:
             exit()
         elif data == "list":
             self.write(f"\n{len(self.storage.users)} members active:")
-            for usr in self.storage.users:
-                self.write(f"\n   {usr.name.to_str()} - {usr.sid}")
+            for sid, usr in self.storage.users.items():
+                self.write(f"\n   {usr.to_str()} - {sid}")
         elif data == "join":
             system("explorer \"http://localhost:8080\"")
             

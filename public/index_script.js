@@ -56,6 +56,7 @@ socket.on('login answer', (data) => {
         result.style.color = "#00FF00";
         main.innerHTML = data["new"];
         next();
+        new_message = {"id": data["req_id"]};
         break;
         case "overlap":
         result.innerHTML = " * this user already logged in"

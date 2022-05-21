@@ -2,28 +2,29 @@
 <!DOCTYPE html>
 <html id="main" lang="en">
     <head>
+        <title>Chat</title>
         <style>
-            .scroll-container {
-                width: 300px;
-                height: 200px;
-                overflow-y: scroll;
-                scroll-behavior: smooth;
-                margin-left: 48px;
-              }
             .scroll-page {
                 display: flex;
                 align-items: left;
                 justify-content: left;
+                overflow-wrap: anywhere;
+                width: 286.4px;
             }
             
         </style>
     </head>
     <body id="body">
-        <div id="messages" class="scroll-container">
-            <div id="0" class="scroll-page">Welcome to this chat!</div>
+        <div id="messages" style="width: 300px; height: 200px; overflow-y: scroll; scroll-behavior: smooth; margin-left: 48px;">
+            <div id="1" class="scroll-page">Welcome to this chat!</div>
+            <div id="1" class="scroll-page">Welcome to this chat!</div>
         </div>
         <div>
             <div style="display:inline-block; width:48px; height:19px; background-color:white; color:black;"><nobr id="user">Curom...</nobr></div><input placeholder="Message" id="message" onkeydown="send_message_key()" style="width: 250px;"><button onclick="send_message()" style="width: 48px;">Send</button>
         </div>
+        <p id="p1"></p>
+        <p id="p2"></p>
+        <p id="p3"></p>
+        <p id="p4"></p>
     </body>
 </html>
